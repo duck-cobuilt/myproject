@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Attendance Tracker</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        color: #fff;
+    }
+
+    .card {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+        padding: 32px;
+        border-radius: 18px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+        margin-top: 0;
+        text-align: center;
+        font-size: 1.8rem;
+        margin-bottom: 24px;
+    }
+
+    label {
+        display: block;
+        margin-top: 16px;
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        margin-top: 6px;
+        border-radius: 10px;
+        border: none;
+        outline: none;
+        font-size: 1rem;
+    }
+
+    button {
+        margin-top: 24px;
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        border: none;
+        background: #00c6ff;
+        color: #000;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0, 198, 255, 0.4);
+    }
+
+    .result {
+        margin-top: 24px;
+        padding: 16px;
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.3);
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .warning {
+        color: #ffb3b3;
+        font-weight: 600;
+    }
+
+    .safe {
+        color: #b3ffda;
+        font-weight: 600;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>Attendance Tracker</h1>
+
+    <label>Classes Present So Far</label>
+    <input type="number" id="present" min="0">
+
+    <label>Classes Absent So Far</label>
+    <input type="number" id="absent" min="0">
+
+    <label>Classes Still To Go</label>
+    <input type="number" id="remaining" min="0">
+
+    <button onclick="calculateAttendance()">Calculate</button>
+
+    <div class="result" id="result" style="display:none;"></div>
+</div>
+
+<script>
+function calculateAttendance() {
+    const present = parseInt(document.getElementById("present").value) || 0;
+    const absent = parseInt(document.getElementById("absent").value) || 0;
+    const remaining = parseInt(document.getElementById("remaining").value) || 0;
+
+    const totalClasses = present + absent + remaining;
+    const resultDiv = document.getElementById("result");
+
+    if (totalClasses === 0) {
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = "No classes exist. Attendance is theoretically perfect.";
+        return;
+    }
+
+    const currentAttendance = (present + absent) > 0
+        ? (present / (present + absent)) * 100
+        : 100;
+
+    const minRequired = 85;
+    const maxTotalAbsences = Math.floor(totalClasses * (1 - minRequired / 100));
+    const remainingAbsences = maxTotalAbsences - absent;
+    const maxFutureAbsences = Math.min(remainingAbsences, remaining);
+
+    let message = `
+        <strong>Total Classes:</strong> ${totalClasses}<br>
+        <strong>Current Attendance:</strong> ${currentAttendance.toFixed(2)}%<br><br>
+    `;
+
+    if (remainingAbsences < 0) {
+        message += `<span class="warning">
+            Attendance is already below 85%. Recovery is not possible.
+        </span>`;
+    } else {
+        message += `
+            You may miss <strong>${maxFutureAbsences}</strong> of the remaining
+            <strong>${remaining}</strong> classes.<br><br>
+        `;
+
+        if (maxFutureAbsences === 0) {
+            message += `<span class="warning">
+                One more absence drops you below 85%.
+            </span>`;
+        } else {
+            message += `<span class="safe">
+                Attendance is safe if you don’t get careless.
+            </span>`;
+        }
+    }
+
+    resultDiv.style.display = "block";
+    resultDiv.innerHTML = message;
+}
+</script>
+
+</body>
+</html>
