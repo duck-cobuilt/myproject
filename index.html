@@ -91,6 +91,14 @@
         color: #b3ffda;
         font-weight: 600;
     }
+
+    .disclaimer {
+        margin-top: 18px;
+        font-size: 0.75rem;
+        opacity: 0.6;
+        line-height: 1.4;
+        text-align: center;
+    }
 </style>
 </head>
 
@@ -111,6 +119,12 @@
     <button onclick="calculateAttendance()">Calculate</button>
 
     <div class="result" id="result" style="display:none;"></div>
+
+    <div class="disclaimer">
+        Disclaimer: This calculator provides an estimate based on entered values.
+        Actual attendance calculations may vary due to institutional rules,
+        rounding policies, or schedule changes.
+    </div>
 </div>
 
 <script>
@@ -170,3 +184,4 @@ function calculateAttendance() {
 
 </body>
 </html>
+
